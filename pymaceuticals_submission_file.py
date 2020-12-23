@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[140]:
 
 
 # Import dependencies
@@ -23,14 +23,14 @@ study_results = pd.read_csv(study_results_path)
 mouse_metadata
 
 
-# In[2]:
+# In[141]:
 
 
 # Display study data
 study_results
 
 
-# In[3]:
+# In[142]:
 
 
 # Merge data to attribute Drug Regimen to Tumor Volume
@@ -39,7 +39,7 @@ mergeData
 #mergeData.sort_values(["Mouse ID", "Timepoint"])
 
 
-# In[4]:
+# In[143]:
 
 
 # Use .duplicated to retrieve Mouse IDs in rows where Mouse IDs and timepoints are a duplicate
@@ -48,7 +48,7 @@ mergeDataDupe = mergeData[mergeData.duplicated(subset = ["Mouse ID","Timepoint"]
 dupeMice = mergeDataDupe["Mouse ID"].unique()
 
 
-# In[5]:
+# In[144]:
 
 
 # Use for loop to regenerate database without each Mouse ID found to be a duplicate
@@ -62,7 +62,7 @@ mergeDataCleanChk = mergeDataClean[mergeDataClean.duplicated(subset = ["Mouse ID
 print(mergeDataCleanChk)
 
 
-# In[6]:
+# In[145]:
 
 
 # Review final cleaned dataframe
@@ -74,7 +74,7 @@ print(mergeDataClean.count())
 print(f'-------------------------')
 
 
-# In[7]:
+# In[146]:
 
 
 #Final Review
@@ -87,7 +87,7 @@ print(f'-------------------------')
 # Use mergeDataClean as the dataset
 
 
-# In[8]:
+# In[147]:
 
 
 # Generate a summary statistics table consisting of the following stats on the tumor 
@@ -125,7 +125,7 @@ summaryStatsdf["SEM"] = summaryStatsdf["SEM"].map("{:,.3f}".format)
 summaryStatsdf
 
 
-# In[21]:
+# In[148]:
 
 
 # Create and display bar plot for total number of measurements for each regimen as instructed by the
@@ -149,7 +149,7 @@ plt.legend()
 plt.show()
 
 
-# In[22]:
+# In[149]:
 
 
 #pyplot version
@@ -171,7 +171,7 @@ plt.legend([yValues.index.name], loc = "best")
 plt.show()
 
 
-# In[34]:
+# In[150]:
 
 
 # Create and display pie plot for total number of mice per gender
@@ -193,7 +193,7 @@ plt.ylabel("")
 plt.show()
 
 
-# In[35]:
+# In[151]:
 
 
 # Create and display pie plot for total number of mice per gender
@@ -212,7 +212,7 @@ plt.axis("equal")
 plt.show()
 
 
-# In[25]:
+# In[152]:
 
 
 # Calculate the final tumor volume of each mouse across four of the most promising treatment regimens: 
@@ -237,111 +237,41 @@ finalTumordf = finalTumordf.rename(columns = {"Tumor Volume (mm3)":"Final Tumor 
 finalTumordf
 
 
-# In[26]:
+# In[164]:
 
 
-# Calculate quartiles and IQRs for all treatment regimens
+drugsList = ["Capomulin","Ramicane","Infubinol","Ceftamin"]
+tempVol = []
 
-# Capomulin
-capdf = finalTumordf.loc[(finalTumordf["Drug Regimen"] == "Capomulin"),["Final Tumor Volume"]]
-print(f'Capomulin')
-print(f'--------------------------------')
-capQrtl = capdf["Final Tumor Volume"].quantile([.25,.5,.75])
-lowerCapQrtl = capQrtl[0.25]
-print(f'Lower Quartile: {"%.3f" % lowerCapQrtl}')
-upperCapQrtl = capQrtl[0.75]
-print(f'Upper Quartile: {"%.3f" % upperCapQrtl}')
-iqrCapQrtl = upperCapQrtl - lowerCapQrtl
-print(f'IQR: {"%.3f" % iqrCapQrtl}')
-lowerBoundCapQrtl = lowerCapQrtl - (1.5 * iqrCapQrtl)
-print(f'Lower Bound: {"%.3f" % lowerBoundCapQrtl}')
-upperBoundCapQrtl = upperCapQrtl + (1.5 * iqrCapQrtl)
-print(f'Upper Bound: {"%.3f" % upperBoundCapQrtl}')
-outliersCapQrtl = capdf.loc[(capdf['Final Tumor Volume'] < lowerBoundCapQrtl) | (capdf['Final Tumor Volume'] > upperBoundCapQrtl)]
-outliersCapQrtl
-if outliersCapQrtl.empty:
-    print(f'No outliers for Capomulin')
-else:
-    print(f'Outliers present for Capomulin')
-    print(finalTumordf.loc[outliersCapQrtl.index,["Mouse ID", "Final Tumor Volume"]])
-    print(outliersCapQrtl)
+print(f'Quartile Data on Final Tumor Volumes')
 print()
-
-# Ramicane 
-ramdf = finalTumordf.loc[(finalTumordf["Drug Regimen"] == "Ramicane"),["Final Tumor Volume"]]
-#ramQrtlSeries = ramSeries.quantile([.25,.5,.75])
-print(f'Ramicane')
-print(f'--------------------------------')
-ramQrtl = ramdf["Final Tumor Volume"].quantile([.25,.5,.75])
-lowerRamQrtl = ramQrtl[0.25]
-print(f'Lower Quartile: {"%.3f" % lowerRamQrtl}')
-upperRamQrtl = ramQrtl[0.75]
-print(f'Upper Quartile: {"%.3f" % upperRamQrtl}')
-iqrRamQrtl = upperRamQrtl - lowerRamQrtl
-print(f'IQR: {"%.3f" % iqrRamQrtl}')
-lowerBoundRamQrtl = lowerRamQrtl - (1.5 * iqrRamQrtl)
-print(f'Lower Bound: {"%.3f" % lowerBoundCapQrtl}')
-upperBoundRamQrtl = upperRamQrtl + (1.5 * iqrRamQrtl)
-print(f'Upper Bound: {"%.3f" % upperBoundRamQrtl}')
-outliersRamQrtl = ramdf.loc[(ramdf['Final Tumor Volume'] < lowerBoundRamQrtl) | (ramdf['Final Tumor Volume'] > upperBoundRamQrtl)]
-outliersRamQrtl
-if outliersRamQrtl.empty:
-    print(f'No outliers for Ramicane')
-else:
-    print(f'Outliers present for Ramicane')
-    print(finalTumordf.loc[outliersRamQrtl.index,["Mouse ID", "Final Tumor Volume"]])
-    print(outliersRamQrtl)
-print()
-
-# Infubinol
-infdf = finalTumordf.loc[(finalTumordf["Drug Regimen"] == "Infubinol"),["Final Tumor Volume"]]
-#infQrtlSeries = infSeries.quantile([.25,.5,.75])
-print(f'Infubinol')
-print(f'--------------------------------')
-infQrtl = infdf["Final Tumor Volume"].quantile([.25,.5,.75])
-lowerInfQrtl = infQrtl[0.25]
-print(f'Lower Quartile: {"%.3f" % lowerInfQrtl}')
-upperInfQrtl = infQrtl[0.75]
-print(f'Upper Quartile: {"%.3f" % upperInfQrtl}')
-iqrInfQrtl = upperInfQrtl - lowerInfQrtl
-print(f'IQR: {"%.3f" % iqrInfQrtl}')
-lowerBoundInfQrtl = lowerInfQrtl - (1.5 * iqrInfQrtl)
-print(f'Lower Bound: {"%.3f" % lowerBoundCapQrtl}')
-upperBoundInfQrtl = upperInfQrtl + (1.5 * iqrInfQrtl)
-print(f'Upper Bound: {"%.3f" % upperBoundInfQrtl}')
-outliersInfQrtl = infdf.loc[(infdf['Final Tumor Volume'] < lowerBoundInfQrtl) | (infdf['Final Tumor Volume'] > upperBoundInfQrtl)]
-if outliersInfQrtl.empty:
-    print(f'No outliers for Infubinol')
-else:
-    print(f'Outliers present for Infubinol')
-    print(finalTumordf.loc[outliersInfQrtl.index,["Mouse ID", "Final Tumor Volume"]])
-print()
-
-# Ceftamin
-cefdf = finalTumordf.loc[(finalTumordf["Drug Regimen"] == "Ceftamin"),["Final Tumor Volume"]]
-print(f'Ceftamin')
-print(f'--------------------------------')
-cefQrtl = cefdf["Final Tumor Volume"].quantile([.25,.5,.75])
-lowerCefQrtl = cefQrtl[0.25]
-print(f'Lower Quartile: {"%.3f" % lowerCefQrtl}')
-upperCefQrtl = cefQrtl[0.75]
-print(f'Upper Quartile: {"%.3f" % upperCefQrtl}')
-iqrCefQrtl = upperCefQrtl - lowerCefQrtl
-print(f'IQR: {"%.3f" % iqrCefQrtl}')
-lowerBoundCefQrtl = lowerCefQrtl - (1.5 * iqrCefQrtl)
-print(f'Lower Bound: {"%.3f" % lowerBoundCefQrtl}')
-upperBoundCefQrtl = upperCefQrtl + (1.5 * iqrCefQrtl)
-print(f'Upper Bound: {"%.3f" % upperBoundCefQrtl}')
-outliersCefQrtl = cefdf.loc[(cefdf['Final Tumor Volume'] < lowerBoundCefQrtl) | (cefdf['Final Tumor Volume'] > upperBoundCefQrtl)]
-if outliersCefQrtl.empty:
-    print(f'No outliers for Ceftamin')
-else:
-    print(f'Outliers present for Ceftamin')
-    print(finalTumordf.loc[outliersCefQrtl.index,["Mouse ID", "Final Tumor Volume"]])
-    print(outliersCefQrtl)
+for x in drugsList:
+    tempVolValue = finalTumordf.loc[finalTumordf["Drug Regimen"] == x, "Final Tumor Volume"]
+    tempVol.append(tempVolValue)
+    print(f'{x}')
+    print(f'--------------------------------')
+    qrtl = tempVolValue.quantile([.25,.5,.75])
+    lowerQrtl = qrtl[0.25]
+    print(f'Lower Quartile: {"%.3f" % lowerQrtl}')
+    upperQrtl = qrtl[0.75]
+    print(f'Upper Quartile: {"%.3f" % upperQrtl}')
+    iqrQrtl = upperQrtl - lowerQrtl
+    print(f'IQR: {"%.3f" % iqrQrtl}')
+    lowerBoundQrtl = lowerQrtl - (1.5 * iqrQrtl)
+    print(f'Lower Bound: {"%.3f" % lowerBoundQrtl}')
+    upperBoundQrtl = upperQrtl + (1.5 * iqrQrtl)
+    print(f'Upper Bound: {"%.3f" % upperBoundQrtl}')
+    outliersQrtl = tempVolValue.loc[(tempVolValue < lowerBoundQrtl) | (tempVolValue > upperBoundQrtl)]
+    outliersQrtl
+    if outliersQrtl.empty:
+        print(f'No outliers for {x}')
+    else:
+        print(f'Outliers present for {x}')
+        print(finalTumordf.loc[outliersQrtl.index,["Mouse ID", "Final Tumor Volume"]])
+    print()
 
 
-# In[27]:
+# In[154]:
 
 
 # Plot boxplots
@@ -355,12 +285,12 @@ fig2, ax2 = plt.subplots()
 ax2.set_title('Final Tumor Size Per Drug Regimen')
 ax2.set_ylabel('Final Tumor Volume')
 red_diamond = dict(markerfacecolor='r', marker='D')
-plt.xticks([],["Capomulin", "Ramicane", "Infubinol", "Ceftamin"]) 
+plt.xticks([], ["Capomulin", "Ramicane", "Infubinol", "Ceftamin"]) 
 ax2.boxplot(obsArray, flierprops = red_diamond)
 plt.show()
 
 
-# In[33]:
+# In[161]:
 
 
 # Select a mouse that was treated with Capomulin and generate a line plot of tumor volume vs. time point 
@@ -384,7 +314,7 @@ plt.legend(handles=[capSingleline], loc="best")
 plt.show()
 
 
-# In[29]:
+# In[160]:
 
 
 # Generate a scatter plot of mouse weight versus average tumor volume for the Capomulin treatment regimen.
@@ -399,12 +329,12 @@ plt.scatter(capWeight,capAvgVol)
 plt.title("Mouse Weight Versus Average Tumor Volume for Capomulin")
 plt.xlabel("Weight")
 plt.ylabel("Average Tumor Size")
-plt.xlim(min(capWeight) + 0.5, max(capWeight) + 2)
+plt.xlim(min(capWeight) - 0.8, max(capWeight) + 2)
 plt.ylim(min(capAvgVol) - 0.5 , max(capAvgVol) + 2)
 plt.show()
 
 
-# In[30]:
+# In[159]:
 
 
 # Calculate the correlation coefficient and linear regression model between mouse weight and 
@@ -427,7 +357,7 @@ plt.annotate(line_eq,(21.5,40),fontsize=12,color="red")
 plt.title("Mouse Weight Versus Average Tumor Volume for Capomulin")
 plt.xlabel("Weight")
 plt.ylabel("Average Tumor Size")
-plt.xlim(min(capWeight) + 0.5, max(capWeight) + 2)
+plt.xlim(min(capWeight) - 0.8, max(capWeight) + 2)
 plt.ylim(min(capAvgVol) - 0.5 , max(capAvgVol) + 2)
 plt.show()
 
